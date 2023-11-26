@@ -4,11 +4,11 @@ App = {
   account: '0x0',
   contractInstance: null,
 
-  init: function() {
+  init: ()  =>{
     return App.initWeb3();
   },
 
-  initWeb3: function() {
+  initWeb3: () =>{
     if (typeof web3 !== 'undefined') {
       // If a web3 instance is already provided by Meta Mask.
       App.web3Provider = web3.currentProvider;
@@ -21,14 +21,14 @@ App = {
     return App.initContract();
   },
 
-  initContract: function() {
-    $.getJSON("Election.json", function(election) {
+  initContract: () =>{
+    $.getJSON("Election.json", (election) => {
       // Instantiate a new truffle contract from the artifact
       App.contracts.Election = TruffleContract(election);
       // Connect provider to interact with contract
       App.contracts.Election.setProvider(App.web3Provider);
 
-      App.listenForEvents();
+      
       return App.render();
     });
   },
@@ -45,15 +45,16 @@ App = {
   },
 
   render: async() => {
-    // Load contract data
-    let instance = await App.contracts.Election.deployed();
-    App.contractInstance = instance;
-
     var loader = $("#loader");
     var content = $("#content");
     
     loader.show();
     content.hide();
+
+    // Load contract data
+    let instance = await App.contracts.Election.deployed();
+    App.contractInstance = instance;
+    console.log("contractinstance>", instance);
     
     // Load account data
     web3.eth.getCoinbase(function(err, account) {
@@ -116,6 +117,7 @@ App = {
   },
 
   addCandidate: async() =>{
+    App.listenForEvents();
     let contractInstance = App.contractInstance;
     console.log("contract instnce from addcandidate>", contractInstance);
     let name = prompt("Enter Candidate Name");
@@ -124,7 +126,7 @@ App = {
     }catch(err){
       console.log("error while adding new candidate>>", err);
     }
-    await App.render();
+    // await App.render();
 
   },
 
@@ -139,6 +141,7 @@ App = {
 
   listenForEvents: async()  =>{
     let contractInstance = App.contractInstance;
+    console.log("voted event>>", contractInstance);
     contractInstance.votedEvent({}, {
       fromBlock: 'latest',
       toBlock: 'latest'
@@ -151,8 +154,8 @@ App = {
   }
 };
 
-$(function() {
-  $(window).load(function() {
+$(() => {
+  $(window).load(() =>{
     App.init();
   });
 });
