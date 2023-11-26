@@ -28,7 +28,6 @@ App = {
       // Connect provider to interact with contract
       App.contracts.Election.setProvider(App.web3Provider);
 
-      
       return App.render();
     });
   },
@@ -63,6 +62,7 @@ App = {
         
       }
     });
+
     await window.ethereum.enable();
     const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
     App.account = accounts[0];
@@ -74,8 +74,6 @@ App = {
       await App.isOwner();
     });
 
-    
-  
     try{
       let candidatesCount = await instance.candidatesCount();
   
@@ -90,10 +88,13 @@ App = {
         let candidate = await instance.candidates(i);
         var id = candidate[0];
         var name = candidate[1];
-        var voteCount = candidate[2];
+        var age = candidate[2];
+        var agenda = candidate[3];
+        var gender = candidate[4];
+        var voteCount = candidate[5];
         
         // Render candidate Result
-        var candidateTemplate = "<tr><th>" + id + "</th><td>" + name + "</td><td>" + voteCount + "</td></tr>";
+        var candidateTemplate = "<tr><th>" + id + "</th><td>" + name + "</td><td>" + age+", "+gender + "</td><td>" + agenda + "</td><td>" + voteCount + "</td></tr>";
         candidatesResults.append(candidateTemplate)
   
         // Render candidate ballot option
@@ -116,13 +117,15 @@ App = {
 
   },
 
-  addCandidate: async() =>{
+  addCandidate: async(details) =>{
+    let {name, age, gender, agenda} = details;
     App.listenForEvents();
+
     let contractInstance = App.contractInstance;
     console.log("contract instnce from addcandidate>", contractInstance);
-    let name = prompt("Enter Candidate Name");
+    // let name = prompt("Enter Candidate Name");
     try{
-      await contractInstance.addCandidate(name, {from: App.account});
+      await contractInstance.addCandidate(name, age, gender, agenda, {from: App.account});
     }catch(err){
       console.log("error while adding new candidate>>", err);
     }
@@ -156,6 +159,9 @@ App = {
 
 $(() => {
   $(window).load(() =>{
+    // if(window.location.pathname === "/"){
+    //   App.init();
+    // }
     App.init();
   });
 });
