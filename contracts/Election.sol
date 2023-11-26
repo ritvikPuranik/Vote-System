@@ -6,6 +6,9 @@ contract Election {
     struct Candidate {
         uint id;
         string name;
+        uint8 age;
+        string agenda;
+        string gender;
         uint voteCount;
     }
 
@@ -25,10 +28,18 @@ contract Election {
         owner = msg.sender;
     }
 
-    function addCandidate (string memory _name) public {
-        require(msg.sender == owner);
+    function addCandidate (string memory _name, uint8 _age, string memory _gender, string memory _agenda) public {
+        require(msg.sender == owner, "Only owner can Add Candidates");
         candidatesCount ++;
-        candidates[candidatesCount] = Candidate(candidatesCount, _name, 0);
+        
+        candidates[candidatesCount] = Candidate({
+            id: candidatesCount,
+            name: _name,
+            age: _age,
+            gender: _gender,
+            agenda: _agenda,
+            voteCount: 0
+        });
     }
 
     function vote (uint _candidateId) public {
