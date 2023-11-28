@@ -3,6 +3,7 @@ App = {
   contracts: {},
   account: '0x0',
   contractInstance: null,
+  userFunds: 0,
 
   init: ()  =>{
     return App.initWeb3();
@@ -104,8 +105,9 @@ App = {
       console.log("app account>", App.account);
       
       let hasVoted = await instance.voters(App.account);
+      console.log("HAS voted>>", hasVoted[1]);
        // Do not allow a user to vote
-       if(hasVoted) {
+       if(hasVoted[1]) {
         $('form').hide();
       }
       loader.hide();
@@ -140,6 +142,20 @@ App = {
     // Wait for votes to update
     $("#content").hide();
     $("#loader").show();
+  },
+
+  addFunds: async() =>{
+    const web3Utils = require('web3-utils');
+    web3 = new Web3(App.web3Provider);
+    console.log("web3>", web3Utils);
+    // console.log("utils>", web3.utils);
+    let amount = prompt("Enter amount to deposit(ether)", "10");
+    // await App.contractInstance.addFunds(amount, {from: App.account});
+    let myVoter = await App.contractInstance.voters(App.account);
+    App.userFunds = myVoter.funds / (10 ** 18);
+    
+    // App.userFunds = web3.utils.fromWei(myVoter.funds, "ether");
+    console.log("user funds updatd to >>", App.userFunds);
   },
 
   listenForEvents: async()  =>{
