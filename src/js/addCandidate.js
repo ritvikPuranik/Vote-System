@@ -5,7 +5,7 @@ const addCandidate = async() =>{
     let allData = Object.fromEntries(formData);
     console.log("allData>>", allData);
     await App.addCandidate(allData);
-    // window.location.href = "/";
+    window.location.href = "/";
 
 }
 
